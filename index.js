@@ -1,5 +1,6 @@
 const express = require('express')
 const app = express()
+const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const dotenv = require('dotenv');
 dotenv.config();
@@ -11,6 +12,9 @@ const SearchTree = require('./api/helpers/SearchTree');
 SearchTree.onloadData();
 
 app.use(morgan("dev"));
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
 app.use("/", productRoutes);
 
 app.use((req, res, next) => {

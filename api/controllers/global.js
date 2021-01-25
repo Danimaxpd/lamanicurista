@@ -2,49 +2,39 @@ const SearchTree = require('../helpers/SearchTree');
 
 exports.get_by_prefix = (req, res, next) => {
   try {
-    const data = SearchTree.SearchTree(req.params.prefix);
-    if(data) {
+    const prefixVal = (req.params.prefix) ? req.params.prefix : null;
+    const data = SearchTree.SearchTree(prefixVal);
+    if (data.length > 0 && data) {
       res.status(200).json(data);
     } else {
-      res.status(400).json({});
+      res.status(400).json({ message: 'No match found - Check your input.' });
     }
   } catch (error) {
-    console.error(err);
+    console.error(error);
     res.status(500).json({
-        error: err
+      error: error
     });
   }
 };
 
 exports.create_name = (req, res, next) => {
-  const product = new Product({
-    _id: new mongoose.Types.ObjectId(),
-    name: req.body.name,
-    price: req.body.price,
-    productImage: req.file.path
-  });
-  product
-    .save()
-    .then(result => {
-      console.log(result);
-      res.status(201).json({
-        message: "Created product successfully",
-        createdProduct: {
-          name: result.name,
-          price: result.price,
-          _id: result._id,
-          request: {
-            type: "GET",
-            url: "http://localhost:3000/products/" + result._id
-          }
-        }
-      });
-    })
-    .catch(err => {
-      console.log(err);
-      res.status(500).json({
-        error: err
-      });
+  try {
+    let name = req.body.name;
+    let time = req.body.times;
+    if (!name || !time) {
+      res.status(400).json({ message: 'Error - Check your input.' });
+    }
+    const data = SearchTree.AddIntree(name);
+    if (data) {
+      res.status(200).json(data);
+    } else {
+      res.status(400).json({ message: 'The name not exist / The system will increase the popularity.' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      error: error
     });
+  }
 };
 
